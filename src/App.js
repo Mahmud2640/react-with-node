@@ -3,6 +3,7 @@ import "./App.css";
 
 function App() {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:5000/users")
@@ -24,6 +25,8 @@ function App() {
     })
       .then((res) => res.json())
       .then((data) => {
+        const newUsers = [...users, data];
+        setUsers(newUsers);
         console.log(data);
       });
   };
@@ -35,12 +38,31 @@ function App() {
         <input type="text" name="email" placeholder="Email" required /> <br />
         <input type="submit" value="Add user" />
       </form>
+      <div>
+        <input
+          type="text"
+          name="search"
+          placeholder="Search"
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      </div>
+
       <h1>I can run : {users.length}</h1>
-      {users.map((user) => (
-        <h1 key={user.id}>
-          Name: {user.name} <br /> Email: {user.email}
-        </h1>
-      ))}
+      {users
+        .filter((user) => {
+          if (search == "") {
+            return user;
+          } else if (user.name.toLowerCase().includes(search.toLowerCase())) {
+            return user;
+          }
+        })
+        .map((user) => (
+          <h1 key={user.id}>
+            Name: {user.name} <br /> Email: {user.email}
+          </h1>
+        ))}
     </div>
   );
 }
